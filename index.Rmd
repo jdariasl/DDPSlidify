@@ -1,0 +1,128 @@
+---
+title       : Introduction to Kernel Non-Parametric Estimation of Statistical Models
+subtitle    : 
+author      : Julián D. Arias Londoño
+job         : Coursera course - Developing Data Products 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [mathjax, bootstrap, quiz, shiny, interactive]            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+ext_widgets: {rCharts: [libraries/nvd3]}
+
+--- .class #id 
+
+## Introduction to Non-Parametric Statistical Models
+
+Statistical models are very useful tools in several fields of Engineering and Sciences. Perhaps two of the most commonly used statistical models are: 
+
+<ul>
+<li>Multiple Linear Regression or</li>
+<li>Multivariate Gaussian Density function based on the Maximum Likelihood criterion. </li>
+</ul> 
+
+
+One of the main drawbacks of these kind of models is the implicit assumption about the nature of the data. <b> Non-parametrics (NP) models </b>, are a class of data-driven statistical models that can be build without making assumptions about the data structure. 
+
+In the following slides, the application of NP models is shown in three different context: 
+
+<ul>
+<li>Probability Density Estimation</li>
+<li>Regression </li>
+<li>Classification </li>
+</ul> 
+
+--- .class #id 
+
+## Probabilistic Density Functions
+
+<font size="2"> The most used NP density estimator is the Histogram, which provides a hard estimation of a density function. There exist another kind of NP estimators that can provide smooth estimations in the same context. One of them is the <b>Parzen Window</b> or <b>Kernel</b> estimator. Given a set of samples $\left\lbrace {\bf{x}}_j\right\rbrace _{j=1}^N$, the kernel density estimator is given by: $p({\bf{x}}^*) = \frac{1}{Nh}\sum_{j=1}^N K(({\bf{x}}_j - {\bf{x}}^*)/h)$, where $K(\cdot)$ is the kernel function and $h$ is the bandwidth. </font> 
+
+```{r opts.label = 'shiny'}
+library(shiny)
+library(slidify)
+library(XML)
+require(devtools)
+slidifyUI(
+  sidebarPanel(
+    sliderInput("n",label = h4("Number of samples"),
+                    min = 10,
+                    max = 200,
+                    value = 100),
+    sliderInput("h",
+                       label = h4("Bandwidth Kernel estimatior"),
+                       min = 0.01,
+                       max = 2,
+                       value = 0.5)
+    ),
+  mainPanel(
+    tabsetPanel(
+             tabPanel("Histogram", plotOutput("distPlot"),height = "200px",width = "400px"),
+             tabPanel("Kernel function", "The kernel function used is: Radial Basis Function")
+             )
+    )
+  )
+```
+
+
+--- .class #id 
+
+## Kernel Regression
+
+<font size="4"> In the same way as before, we can use NP estimators for regression problems. For the sake of comparison, here we are going to use the Nadaraya-Watson kernel regression and a k-Nearest Neighbor estimation.  </font> 
+
+```{r opts.label = 'shiny'}
+library(shiny)
+library(slidify)
+library(XML)
+require("proxy")
+require(devtools)
+slidifyUI(
+  sidebarPanel(
+    sliderInput("n2",label = h4("Number of samples"),
+                    min = 10,
+                    max = 200,
+                    value = 100),
+    sliderInput("h2",
+                       label = h4("Bandwidth Kernel estimatior"),
+                       min = 0.01,
+                       max = 2,
+                       value = 0.5),
+    sliderInput("k",
+                       label = h4("Number of Nearest Neighbors"),
+                       min = 1,
+                       max = 20,
+                       value = 5)
+    ),
+  mainPanel(
+    tabsetPanel(
+             tabPanel("Kernel Regressor", plotOutput("distPlot2")),
+             tabPanel("K-NN Regressor", plotOutput("distPlot3"))
+             )
+    )
+  )
+```
+
+--- .class #id 
+
+## Kernel Decision boundary
+
+```{r opts.label = 'shiny'}
+require(rCharts)
+slidifyUI(
+  sidebarPanel(
+    selectInput('Features', 'Choose Features', c('SepalLength~SepalWidth', 'SepalLength~PetalWidth', 'SepalLength~PetalLength', 'PetalLength~PetalWidth', 'SepalWidth~PetalLength', 'SepalWidth~PetalWidth')),
+    sliderInput("h3",
+                       label = h4("Bandwidth Kernel estimatior"),
+                       min = 0.01,
+                       max = 2,
+                       value = 0.5)
+    ),
+  mainPanel(
+    tabsetPanel(
+             tabPanel("Scatter Plot", tags$div(id = 'chart2', class='shiny-html-output nvd3 rChart')),
+             tabPanel("Decision Boundary", plotOutput("distPlot5"))
+             )
+    )
+  )
+```
